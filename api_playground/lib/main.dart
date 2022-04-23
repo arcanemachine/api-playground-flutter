@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:api_playground/state.dart';
 import 'package:api_playground/screens/login.dart';
 import 'package:api_playground/screens/things.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -23,19 +24,27 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const HomeScreen(),
+        home: const InitScreen(),
       ),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class InitScreen extends StatelessWidget {
+  const InitScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final _state = context.read<AppState>();
-
-    return _state.isLoggedIn ? const ThingsScreen() : const LoginScreen();
+    return FutureBuilder<SharedPreferences>(
+      future: SharedPreferences.getInstance(),
+      builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return snapshot.data?.getBool('isLoggedIn') ?? false ?
+            const ThingsScreen() : const LoginScreen();
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      }
+    );
   }
 }
