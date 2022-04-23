@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:api_playground/screens/login.dart';
-import 'package:api_playground/screens/things.dart';
 
 class AppState extends ChangeNotifier {
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
@@ -23,24 +21,14 @@ class AppState extends ChangeNotifier {
   // login
   void login(BuildContext context) {
     isLoggedIn = true;
-
-    // navigate to ThingsScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const ThingsScreen()),
-    );
+    context.go('/things');
 
     notifyListeners();
   }
 
   void logout(BuildContext context) {
     isLoggedIn = false;
-
-    // navigate to LoginScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+    context.go('/login');
 
     notifyListeners();
   }

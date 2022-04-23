@@ -18,9 +18,9 @@ class ThingsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
             ThingsWidget(),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }
@@ -53,7 +53,9 @@ class ThingsWidget extends StatelessWidget {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("'${_dummyThings[i]['name']}' tapped"),
+                            content: Text(
+                              "'${_dummyThings[i]['name']}' tapped"
+                            ),
                             action: SnackBarAction(
                               label: 'OK',
                               onPressed: () {},
