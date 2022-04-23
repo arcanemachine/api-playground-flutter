@@ -5,11 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:api_playground/state.dart';
 import 'package:api_playground/screens/login.dart';
 import 'package:api_playground/screens/things.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await sharedPrefs.init();
 
   runApp(const MyApp());
 }
@@ -76,23 +77,10 @@ class InitScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SharedPreferences>(
-      future: SharedPreferences.getInstance(),
-      builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data?.getBool('isLoggedIn') == true) {
-            return const LoginScreen();
-          } else {
-            return const ThingsScreen();
-          }
-        }
-        return const Scaffold(
-          backgroundColor: Colors.white,
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
-    );
+    if (sharedPrefs.isLoggedIn) {
+      return const ThingsScreen();
+    } else {
+      return const LoginScreen();
+    }
   }
 }

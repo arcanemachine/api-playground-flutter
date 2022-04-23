@@ -3,33 +3,32 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late String firstName;
-
-  Future<bool> get isLoggedIn async {
-    return _prefs.then((SharedPreferences prefs) {
-      return prefs.getBool('isLoggedIn') ?? false;
-    });
-  }
-
-  set isLoggedIn(val) {
-    _prefs.then((SharedPreferences prefs) {
-      prefs.setBool('isLoggedIn', val);
-    });
-  }
-
-  // login
   void login(BuildContext context) {
-    isLoggedIn = true;
+    sharedPrefs.isLoggedIn = true;
     context.go('/things');
-
     notifyListeners();
   }
 
   void logout(BuildContext context) {
-    isLoggedIn = false;
+    sharedPrefs.isLoggedIn = false;
     context.go('/login');
-
     notifyListeners();
   }
 }
+
+class SharedPrefs {
+  static SharedPreferences? _sharedPrefs;
+
+  init() async {
+    _sharedPrefs ??= await SharedPreferences.getInstance();
+  }
+
+  // isLoggedIn
+  bool get isLoggedIn => _sharedPrefs?.getBool('is_logged_in') ?? false;
+  set isLoggedIn(bool val) {
+    _sharedPrefs?.setBool('is_logged_in', val);
+  }
+
+}
+
+final sharedPrefs = SharedPrefs();
