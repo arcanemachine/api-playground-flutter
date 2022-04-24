@@ -1,21 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+// misc. app state
 class AppState extends ChangeNotifier {
-
 }
 
+// globals
+class Globals extends ChangeNotifier {
+  _Urls get urls {
+    return _Urls();
+  }
+}
+
+// global URLs
+class _Urls {
+  // base
+  static const String _baseUrl = "http://192.168.1.100:8010/api";
+
+  // auth
+  static const String _authBaseUrl = "$_baseUrl/auth";
+  String get login {
+    return "$_authBaseUrl/login/";
+  }
+}
+
+// helper functions
 class Helpers extends ChangeNotifier {
+  snackbarShow(context, message) {
+    final _messenger = ScaffoldMessenger.of(context);
+
+    // hide existing snackbars
+    _messenger.clearSnackBars();
+
+    return _messenger.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+
   void login(BuildContext context) {
     sharedPrefs.isLoggedIn = true;
     context.go('/things');
+    snackbarShow(context, "Login successful");
+
     notifyListeners();
   }
 
   void logout(BuildContext context) {
     sharedPrefs.isLoggedIn = false;
     context.go('/login');
+    snackbarShow(context, "Logout successful");
+
     notifyListeners();
   }
 }
@@ -35,5 +77,28 @@ class SharedPrefs {
   }
 
 }
-
 final sharedPrefs = SharedPrefs();
+
+
+// secure storage
+class SecureStorage {
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  init() async {}  // left empty to allow for initialization in main()
+
+  Future write(String key, String val) async {
+    var writeData = await _storage.write(key: key, value: val);
+    return writeData;
+  }
+
+  Future read(String key) async {
+    var readData = await _storage.read(key: key);
+    return readData;
+  }
+
+  Future delete(String key) async {
+    var deleteData = await _storage.delete(key: key);
+    return deleteData;
+  }
+}
+final secureStorage = SecureStorage();

@@ -1,7 +1,5 @@
+import 'package:api_playground/widgets/main.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:api_playground/state.dart';
 
 
 class ThingsScreen extends StatelessWidget {
@@ -10,9 +8,7 @@ class ThingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-      ),
+      appBar: AppWidgets.auth.loggedInAppBar(context, "Your Things"),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -30,7 +26,6 @@ class ThingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _helpers = context.watch<Helpers>();
     final List _dummyThings = [{'name': "Thing 1", 'id': 0},
                                {'name': "Thing 2", 'id': 1}];
 
@@ -69,13 +64,6 @@ class ThingsWidget extends StatelessWidget {
                   );
                 },
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              child: const Text("Logout"),
-              onPressed: () => _helpers.logout(context),
             ),
           ),
         ],

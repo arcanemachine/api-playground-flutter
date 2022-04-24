@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import 'package:api_playground/state.dart';
@@ -35,37 +39,70 @@ class LoginWidget extends StatefulWidget {
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-  // String username = "";
-  // String password = "";
-
   @override
   Widget build(BuildContext context) {
-    final _helpers = context.watch<Helpers>();
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    bool _isLoading = false;
 
-    // setup controllers
+    // controllers
     final _usernameController =
-      TextEditingController.fromValue(const TextEditingValue(text: ""));
+      TextEditingController.fromValue(const TextEditingValue(text: "user"));
     final _passwordController =
-      TextEditingController.fromValue(const TextEditingValue(text: ""));
+      TextEditingController.fromValue(const TextEditingValue(text: "password"));
 
+
+    // widgets
     Widget _loginForm() {
+      final _globals = context.read<Globals>();
+
       final ButtonStyle _buttonStyle = ElevatedButton.styleFrom(
-        // padding: const EdgeInsets.all(16.0),
         textStyle: const TextStyle(fontSize: 20.0),
         minimumSize: const Size(300, 60),
       );
 
-      void _handleSubmit() {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Form submitted"),
-            action: SnackBarAction(
-              label: 'OK',
-              onPressed: () {},
+      void _handleSubmit() async {
+        if (kDebugMode) print("_handleSubmit()");
+        final String _username = _usernameController.text;
+        final String _password = _passwordController.text;
+
+        // set loading status
+        _isLoading = true;
+
+        // attempt to login
+        final Uri _loginUrl = Uri.parse(_globals.urls.login);
+        final http.Response _response = await http.post(_loginUrl, body: {
+          "username": _username,
+          "password": _password,
+        });
+
+        // reset loading status
+        _isLoading = false;
+
+        if (_response.statusCode == 200) {
+          final decodedResponse = jsonDecode(_response.body);
+
+          // update state
+          await secureStorage  // save token to secure storage
+            .write('user_api_token', decodedResponse['key']);
+          sharedPrefs.isLoggedIn = true; // set login status
+
+          // login
+          context.read<Helpers>().login(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              // content: Text("Form submitted"),
+              content: Text(
+                "Error ${_response.statusCode}: ${_response.reasonPhrase}"
+              ),
+              // content: Text("loginUrl: $_loginUrl"),
+              action: SnackBarAction(
+                label: 'OK',
+                onPressed: () {},
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
 
       return Form(
@@ -81,21 +118,35 @@ class _LoginWidgetState extends State<LoginWidget> {
                   icon: Icon(Icons.person),
                   labelText: "Username *",
                 ),
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return "This field must not be empty.";
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 controller: _passwordController,
+                obscureText: true,
                 decoration: const InputDecoration(
                   icon: Icon(Icons.key),
                   labelText: "Password *",
                 ),
-                obscureText: true,
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return "This field must not be empty.";
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 30.0),
               Center(
                 child: ElevatedButton(
-                  child: const Text("Login"),
+                  child: _isLoading
+                    ? const Text("Loading...")
+                    : const Text("Login"),
                   style: _buttonStyle,
-                  onPressed: _handleSubmit,
+                  onPressed: () async { _handleSubmit(); },
                 ),
               ),
             ],

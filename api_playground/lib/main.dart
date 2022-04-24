@@ -5,12 +5,18 @@ import 'package:go_router/go_router.dart';
 import 'package:api_playground/state.dart';
 import 'package:api_playground/screens/login.dart';
 import 'package:api_playground/screens/things.dart';
+import 'package:api_playground/widgets/main.dart';
 
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // state
   await sharedPrefs.init();
+  await secureStorage.init();
+
+  // widgets
+  appWidgets.init();
 
   runApp(const MyApp());
 }
@@ -47,6 +53,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<AppState>(
           create: (_) => AppState(),
+          lazy: false,
+        ),
+        ChangeNotifierProvider<Globals>(
+          create: (_) => Globals(),
           lazy: false,
         ),
         ChangeNotifierProvider<Helpers>(
