@@ -30,9 +30,9 @@ class ThingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _state = context.watch<AppState>();
+    final _helpers = context.watch<Helpers>();
     final List _dummyThings = [{'name': "Thing 1", 'id': 0},
-      {'name': "Thing 2", 'id': 1}];
+                               {'name': "Thing 2", 'id': 1}];
 
     return Expanded(
       child: Column(
@@ -75,7 +75,7 @@ class ThingsWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
               child: const Text("Logout"),
-              onPressed: () => _state.logout(context),
+              onPressed: () => _helpers.logout(context),
             ),
           ),
         ],

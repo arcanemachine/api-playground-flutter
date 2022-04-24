@@ -49,6 +49,10 @@ class MyApp extends StatelessWidget {
           create: (_) => AppState(),
           lazy: false,
         ),
+        ChangeNotifierProvider<Helpers>(
+          create: (_) => Helpers(),
+          lazy: false,
+        ),
         Provider<AppRouter>(
           lazy: false,
           create: (_) => AppRouter(),

@@ -3,6 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
+
+}
+
+class Helpers extends ChangeNotifier {
   void login(BuildContext context) {
     sharedPrefs.isLoggedIn = true;
     context.go('/things');
@@ -16,6 +20,7 @@ class AppState extends ChangeNotifier {
   }
 }
 
+// shared preferences
 class SharedPrefs {
   static SharedPreferences? _sharedPrefs;
 
