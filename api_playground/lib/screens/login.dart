@@ -149,7 +149,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                     ? const Text("Loading...")
                     : const Text("Login"),
                   style: _buttonStyle,
-                  onPressed: () async { _handleSubmit(); },
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      _handleSubmit();
+                    }
+                  },
                 ),
               ),
             ],
