@@ -1,4 +1,4 @@
-import 'package:api_playground/widgets/main.dart';
+import 'package:api_playground/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 

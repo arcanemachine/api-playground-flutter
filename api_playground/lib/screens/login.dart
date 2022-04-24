@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import 'package:api_playground/state.dart';
+import 'package:api_playground/helpers/helpers.dart';
 
 
 class LoginScreen extends StatelessWidget {
@@ -87,7 +88,7 @@ class _LoginWidgetState extends State<LoginWidget> {
           sharedPrefs.isLoggedIn = true; // set login status
 
           // login
-          context.read<Helpers>().login(context);
+          helpers.login(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -124,6 +125,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   }
                   return null;
                 },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
               TextFormField(
                 controller: _passwordController,
@@ -138,6 +140,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   }
                   return null;
                 },
+                autovalidateMode: AutovalidateMode.onUserInteraction,
               ),
               const SizedBox(height: 30.0),
               Center(

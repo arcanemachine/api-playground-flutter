@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:api_playground/state.dart';
-import 'package:provider/provider.dart';
+import 'package:api_playground/helpers/helpers.dart';
 
 class AuthWidgets {
   PreferredSizeWidget loggedInAppBar(BuildContext context, String title) {
@@ -11,11 +10,10 @@ class AuthWidgets {
         PopupMenuButton(
           itemBuilder: (context) {
             return <PopupMenuEntry>[
-              // logout
-              PopupMenuItem(
+              PopupMenuItem( // logout
                 child: const Text("Logout"),
                 onTap: () {
-                  WidgetsBinding?.instance?.addPostFrameCallback((_) {
+                  WidgetsBinding.instance?.addPostFrameCallback((_) {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
@@ -29,7 +27,7 @@ class AuthWidgets {
                           TextButton(
                             child: const Text("Yes"),
                             onPressed: () {
-                              context.read<Helpers>().logout(context);
+                              helpers.logout(context);
                             },
                           ),
                         ],

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:api_playground/state.dart';
 import 'package:api_playground/screens/login.dart';
 import 'package:api_playground/screens/things.dart';
-import 'package:api_playground/widgets/main.dart';
+import 'package:api_playground/widgets/widgets.dart';
 
 
 Future main() async {
@@ -57,10 +57,6 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<Globals>(
           create: (_) => Globals(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider<Helpers>(
-          create: (_) => Helpers(),
           lazy: false,
         ),
         Provider<AppRouter>(
