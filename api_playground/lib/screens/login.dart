@@ -173,8 +173,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   : const CircularProgressIndicator(),
                 style: _loginButtonStyle,
                 onPressed: _loginButtonActive && !_isLoading
-                  ? () { _handleSubmit(); }
-                  : null,
+                  ? () { _handleSubmit(); } : null,
               ),
             ),
           ],
