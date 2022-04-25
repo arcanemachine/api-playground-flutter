@@ -31,8 +31,19 @@ class AppRouter {
       ),
       GoRoute(
         path: '/login',
-        builder: (BuildContext context, GoRouterState state) =>
-        const LoginScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const LoginScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            SlideTransition(
+              position: animation.drive(
+                Tween<Offset>(
+                  begin: const Offset(-1.0, 0.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeIn)),
+              ),
+              child: child),
+        ),
       ),
       GoRoute(
         path: '/things',
