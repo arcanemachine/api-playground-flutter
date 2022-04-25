@@ -6,7 +6,7 @@ import 'package:api_playground/state.dart';
 class Helpers extends ChangeNotifier {
   init() async {}
 
-  snackbarShow(context, message) {
+  snackBarShow(context, message) {
     final _messenger = ScaffoldMessenger.of(context);
 
     // hide existing snackbars
@@ -26,7 +26,7 @@ class Helpers extends ChangeNotifier {
   void login(BuildContext context) {
     sharedPrefs.isLoggedIn = true;
     context.go('/things');
-    snackbarShow(context, "Login successful");
+    snackBarShow(context, "Login successful");
 
     notifyListeners();
   }
@@ -34,7 +34,7 @@ class Helpers extends ChangeNotifier {
   void logout(BuildContext context) {
     sharedPrefs.isLoggedIn = false;
     context.go('/login');
-    snackbarShow(context, "Logout successful");
+    snackBarShow(context, "Logout successful");
 
     notifyListeners();
   }

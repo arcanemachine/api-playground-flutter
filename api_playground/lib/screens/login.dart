@@ -42,17 +42,36 @@ class LoginWidget extends StatefulWidget {
 
 class _LoginWidgetState extends State<LoginWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  var _isLoading = false;
+  bool _isLoading = false;
+  bool _loginButtonActive = false;
 
   void _isLoadingSet(bool val) {
     setState(() { _isLoading = val; });
   }
 
+  void _updateLoginButtonStatus() {
+    late bool _buttonIsActive;
+
+    // determine button status
+    if (!_isLoading
+        && _usernameController.text.isNotEmpty
+        && _passwordController.text.isNotEmpty) {
+      _buttonIsActive = true;
+    } else {
+      _buttonIsActive = false;
+    }
+
+    // update state
+    setState(() {
+      _loginButtonActive = _buttonIsActive;
+    });
+  }
+
   // controllers
   final _usernameController =
-  TextEditingController.fromValue(const TextEditingValue(text: "user"));
+    TextEditingController.fromValue(const TextEditingValue(text: ""));
   final _passwordController =
-  TextEditingController.fromValue(const TextEditingValue(text: "password"));
+    TextEditingController.fromValue(const TextEditingValue(text: ""));
 
   // widgets
   Widget _loginForm() {
@@ -119,6 +138,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 icon: Icon(Icons.person),
                 labelText: "Username *",
               ),
+              onChanged: (x) { _updateLoginButtonStatus(); },
               validator: (val) {
                 if (val == null || val.isEmpty) {
                   return "This field must not be empty.";
@@ -134,6 +154,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                 icon: Icon(Icons.key),
                 labelText: "Password *",
               ),
+              onChanged: (x) { _updateLoginButtonStatus(); },
+              onFieldSubmitted: _loginButtonActive
+                ? (x) { _handleSubmit(); } : null,
               validator: (val) {
                 if (val == null || val.isEmpty) {
                   return "This field must not be empty.";
@@ -149,11 +172,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ? const Text("Login")
                   : const CircularProgressIndicator(),
                 style: _loginButtonStyle,
-                onPressed: _isLoading ? null : () async {
-                  if (_formKey.currentState!.validate()) {
-                    _handleSubmit();
-                  }
-                },
+                onPressed: _loginButtonActive && !_isLoading
+                  ? () { _handleSubmit(); }
+                  : null,
               ),
             ),
           ],

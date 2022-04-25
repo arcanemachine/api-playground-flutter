@@ -1,6 +1,8 @@
 import 'package:api_playground/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
+import 'package:api_playground/helpers/helpers.dart';
+
 
 class ThingsScreen extends StatelessWidget {
   const ThingsScreen({Key? key}) : super(key: key);
@@ -46,16 +48,8 @@ class ThingsWidget extends StatelessWidget {
                 itemBuilder: (BuildContext context, int i) {
                   return ListTile(
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "'${_dummyThings[i]['name']}' tapped"
-                            ),
-                            action: SnackBarAction(
-                              label: 'OK',
-                              onPressed: () {},
-                            ),
-                          ),
+                        helpers.snackBarShow(
+                          context, "'${_dummyThings[i]['name']}' tapped"
                         );
                       },
                       title: Text(_dummyThings[i]['name'],
