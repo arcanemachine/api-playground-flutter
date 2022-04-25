@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:api_playground/helpers/helpers.dart';
+import 'package:api_playground/helpers.dart';
+
+class AppWidgets {
+  init() async {}
+  static final auth = AuthWidgets();
+}
 
 class AuthWidgets {
   PreferredSizeWidget loggedInAppBar(BuildContext context, String title) {

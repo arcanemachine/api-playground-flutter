@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:api_playground/state.dart';
 import 'package:api_playground/screens/login.dart';
 import 'package:api_playground/screens/things.dart';
-import 'package:api_playground/widgets/widgets.dart';
 
 
 Future main() async {
@@ -14,9 +13,6 @@ Future main() async {
   // state
   await sharedPrefs.init();
   await secureStorage.init();
-
-  // widgets
-  appWidgets.init();
 
   runApp(const MyApp());
 }
@@ -42,13 +38,26 @@ class AppRouter {
                   end: Offset.zero,
                 ).chain(CurveTween(curve: Curves.easeIn)),
               ),
-              child: child),
+              child: child,
+            ),
         ),
       ),
       GoRoute(
         path: '/things',
-        builder: (BuildContext context, GoRouterState state) =>
-        const ThingsScreen(),
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const ThingsListScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            SlideTransition(
+              position: animation.drive(
+                Tween<Offset>(
+                  begin: const Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeIn)),
+              ),
+              child: child,
+            ),
+        ),
       ),
     ],
   );
@@ -62,14 +71,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AppState>(
-          create: (_) => AppState(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider<Globals>(
-          create: (_) => Globals(),
-          lazy: false,
-        ),
+        // ChangeNotifierProvider<AppState>(
+        //   create: (_) => AppState(),
+        //   lazy: false,
+        // ),
         Provider<AppRouter>(
           lazy: false,
           create: (_) => AppRouter(),
@@ -99,7 +104,7 @@ class InitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (sharedPrefs.isLoggedIn) {
-      return const ThingsScreen();
+      return const ThingsListScreen();
     } else {
       return const LoginScreen();
     }

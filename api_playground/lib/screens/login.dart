@@ -1,13 +1,11 @@
 import 'dart:convert';
 
-// ignore: unnecessary_import
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
+import 'package:api_playground/globals.dart';
+import 'package:api_playground/helpers.dart';
 import 'package:api_playground/state.dart';
-import 'package:api_playground/helpers/helpers.dart';
 
 
 class LoginScreen extends StatelessWidget {
@@ -69,14 +67,12 @@ class _LoginWidgetState extends State<LoginWidget> {
 
   // controllers
   final _usernameController =
-    TextEditingController.fromValue(const TextEditingValue(text: ""));
+    TextEditingController.fromValue(const TextEditingValue(text: "user"));
   final _passwordController =
-    TextEditingController.fromValue(const TextEditingValue(text: ""));
+    TextEditingController.fromValue(const TextEditingValue(text: "password"));
 
   // widgets
   Widget _loginForm() {
-    final _globals = context.read<Globals>();
-
     final ButtonStyle _loginButtonStyle = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 20.0),
       minimumSize: const Size(300, 60),
@@ -91,7 +87,7 @@ class _LoginWidgetState extends State<LoginWidget> {
       _isLoadingSet(true);
 
       // attempt to login
-      final Uri _loginUrl = Uri.parse(_globals.urls.login);
+      final Uri _loginUrl = Uri.parse(Globals().urls.login);
       final http.Response _response = await http.post(_loginUrl, body: {
         "username": _username,
         "password": _password,

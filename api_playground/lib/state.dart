@@ -4,27 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // misc. app state
 class AppState extends ChangeNotifier {
+
 }
-
-// globals
-class Globals extends ChangeNotifier {
-  _Urls get urls {
-    return _Urls();
-  }
-}
-
-// global URLs
-class _Urls {
-  // base
-  static const String _baseUrl = "http://192.168.1.100:8010/api";
-
-  // auth
-  static const String _authBaseUrl = "$_baseUrl/auth";
-  String get login {
-    return "$_authBaseUrl/login/";
-  }
-}
-
 
 // shared preferences
 class SharedPrefs {
@@ -46,9 +27,8 @@ final sharedPrefs = SharedPrefs();
 
 // secure storage
 class SecureStorage {
+  init() async {}
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-
-  init() async {}  // left empty to allow for initialization in main()
 
   Future write(String key, String val) async {
     var writeData = await _storage.write(key: key, value: val);
@@ -65,5 +45,4 @@ class SecureStorage {
     return deleteData;
   }
 }
-
 final secureStorage = SecureStorage();
