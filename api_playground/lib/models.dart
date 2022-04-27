@@ -1,28 +1,14 @@
 class Thing {
-  final int id;
-  final String name;
-
-  const Thing({
+  Thing({
     required this.id,
     required this.name,
   });
 
-  @override
-  String toString() {
-    return 'Thing{id: $id, name: $name}';
-  }
+  int id;
+  String name;
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-    };
-  }
-
-  Thing copyWith({int? id, String? name}) {
-    return Thing(
-      id: id ?? this.id,
-      name: name ?? this.name,
-    );
-  }
+  factory Thing.fromJson(Map<String, dynamic> json) => Thing(
+    id: json['id'],
+    name: json['name'],
+  );
 }
