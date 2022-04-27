@@ -13,8 +13,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final _state = context.watch<AppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
@@ -41,7 +39,7 @@ class LoginWidget extends StatefulWidget {
 class _LoginWidgetState extends State<LoginWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  bool _loginButtonActive = false;
+  bool _loginButtonEnabled = true;
 
   void _isLoadingSet(bool val) {
     setState(() { _isLoading = val; });
@@ -61,7 +59,7 @@ class _LoginWidgetState extends State<LoginWidget> {
 
     // update state
     setState(() {
-      _loginButtonActive = _buttonIsActive;
+      _loginButtonEnabled = _buttonIsActive;
     });
   }
 
@@ -151,7 +149,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 labelText: "Password *",
               ),
               onChanged: (x) { _updateLoginButtonStatus(); },
-              onFieldSubmitted: _loginButtonActive
+              onFieldSubmitted: _loginButtonEnabled
                 ? (x) { _handleSubmit(); } : null,
               validator: (val) {
                 if (val == null || val.isEmpty) {
@@ -168,7 +166,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ? const Text("Login")
                   : const CircularProgressIndicator(),
                 style: _loginButtonStyle,
-                onPressed: _loginButtonActive && !_isLoading
+                onPressed: _loginButtonEnabled && !_isLoading
                   ? () { _handleSubmit(); } : null,
               ),
             ),

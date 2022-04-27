@@ -6,23 +6,6 @@ import 'package:api_playground/state.dart';
 class Helpers extends ChangeNotifier {
   init() async {}
 
-  snackBarShow(context, message) {
-    final _messenger = ScaffoldMessenger.of(context);
-
-    // hide existing snackbars
-    _messenger.clearSnackBars();
-
-    return _messenger.showSnackBar(
-      SnackBar(
-        content: Text(message),
-        action: SnackBarAction(
-          label: 'OK',
-          onPressed: () {},
-        ),
-      ),
-    );
-  }
-
   void login(BuildContext context) {
     sharedPrefs.isLoggedIn = true;
     context.go('/things');
@@ -37,6 +20,25 @@ class Helpers extends ChangeNotifier {
     snackBarShow(context, "Logout successful");
 
     notifyListeners();
+  }
+
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarShow(
+    context, message
+  ) {
+    final _messenger = ScaffoldMessenger.of(context);
+
+    // hide existing snackbars
+    _messenger.clearSnackBars();
+
+    return _messenger.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: () {},
+        ),
+      ),
+    );
   }
 }
 final helpers = Helpers();

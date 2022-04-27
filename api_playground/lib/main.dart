@@ -45,7 +45,7 @@ final GoRouter _router = GoRouter(
       path: '/things',
       pageBuilder: (context, state) => CustomTransitionPage<void>(
         key: state.pageKey,
-        child: const ThingsListScreen(),
+        child: const ThingsScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             SlideTransition(
               position: animation.drive(
@@ -85,7 +85,7 @@ class InitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (sharedPrefs.isLoggedIn) {
-      return const ThingsListScreen();
+      return const ThingsScreen();
     } else {
       return const LoginScreen();
     }
