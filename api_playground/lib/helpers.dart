@@ -9,7 +9,7 @@ class Helpers extends ChangeNotifier {
   void login(BuildContext context) {
     sharedPrefs.isLoggedIn = true;
     context.go('/things');
-    snackBarShow(context, "Login successful");
+    widgetHelpers.snackBarShow(context, "Login successful");
 
     notifyListeners();
   }
@@ -17,11 +17,15 @@ class Helpers extends ChangeNotifier {
   void logout(BuildContext context) {
     sharedPrefs.isLoggedIn = false;
     context.go('/login');
-    snackBarShow(context, "Logout successful");
+    widgetHelpers.snackBarShow(context, "Logout successful");
 
     notifyListeners();
   }
 
+}
+final helpers = Helpers();
+
+class WidgetHelpers {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarShow(
     context, message
   ) {
@@ -40,5 +44,12 @@ class Helpers extends ChangeNotifier {
       ),
     );
   }
+
+  void dialogShow(BuildContext context, AlertDialog alertDialog) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => alertDialog,
+    );
+  }
 }
-final helpers = Helpers();
+final widgetHelpers = WidgetHelpers();

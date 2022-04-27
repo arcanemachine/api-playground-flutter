@@ -50,13 +50,6 @@ class AuthWidgets {
 }
 
 class WidgetHelpers {
-  static void dialogShow(BuildContext context, AlertDialog alertDialog) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => alertDialog
-    );
-  }
-
   static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarShow(
       BuildContext context, String message
       ) {

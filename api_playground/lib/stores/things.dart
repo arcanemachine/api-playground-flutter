@@ -8,6 +8,7 @@ part 'things.g.dart';
 class ThingsStore = _ThingsStore with _$ThingsStore;
 
 abstract class _ThingsStore with Store {
+  // list
   _ThingsStore() {
     fetchThings();
   }
@@ -26,7 +27,7 @@ abstract class _ThingsStore with Store {
 
   @action
   Future<void> fetchThings() async {
-    await ThingsService().getThings().then((result) {
+    await ThingsService().thingsGet().then((result) {
       initialFetchCompleted = true;
       things = ObservableList<Thing>.of(result);
     });
