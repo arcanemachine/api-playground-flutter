@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
-            LoginWidget()
+            LoginFormWidget()
           ],
         ),
       ),
@@ -29,45 +29,31 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class LoginWidget extends StatefulWidget {
-  const LoginWidget({Key? key}) : super(key: key);
+class LoginFormWidget extends StatefulWidget {
+  const LoginFormWidget({Key? key}) : super(key: key);
 
   @override
-  State<LoginWidget> createState() => _LoginWidgetState();
+  State<LoginFormWidget> createState() => _LoginFormWidgetState();
 }
 
-class _LoginWidgetState extends State<LoginWidget> {
+class _LoginFormWidgetState extends State<LoginFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  bool _loginButtonEnabled = true;
 
   void _isLoadingSet(bool val) {
     setState(() { _isLoading = val; });
   }
 
-  void _updateLoginButtonStatus() {
-    late bool _buttonIsActive;
-
-    // determine button status
-    if (!_isLoading
-        && _usernameController.text.isNotEmpty
-        && _passwordController.text.isNotEmpty) {
-      _buttonIsActive = true;
-    } else {
-      _buttonIsActive = false;
-    }
-
-    // update state
-    setState(() {
-      _loginButtonEnabled = _buttonIsActive;
-    });
-  }
+  bool get _loginButtonEnabled =>
+    !_isLoading
+    && _usernameController.text.isNotEmpty
+    && _passwordController.text.isNotEmpty;
 
   // controllers
   final _usernameController =
-    TextEditingController.fromValue(const TextEditingValue(text: "user"));
+    TextEditingController.fromValue(const TextEditingValue(text: ""));
   final _passwordController =
-    TextEditingController.fromValue(const TextEditingValue(text: "password"));
+    TextEditingController.fromValue(const TextEditingValue(text: ""));
 
   // widgets
   Widget _loginForm() {
@@ -132,7 +118,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 icon: Icon(Icons.person),
                 labelText: "Username *",
               ),
-              onChanged: (x) { _updateLoginButtonStatus(); },
+              onChanged: (x) => setState(() {}),
               validator: (val) {
                 if (val == null || val.isEmpty) {
                   return "This field must not be empty.";
@@ -148,9 +134,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                 icon: Icon(Icons.key),
                 labelText: "Password *",
               ),
-              onChanged: (x) { _updateLoginButtonStatus(); },
-              onFieldSubmitted: _loginButtonEnabled
-                ? (x) { _handleSubmit(); } : null,
+              onChanged: (x) => setState(() {}),
+              onFieldSubmitted: (x) =>  _handleSubmit(),
               validator: (val) {
                 if (val == null || val.isEmpty) {
                   return "This field must not be empty.";
@@ -159,15 +144,14 @@ class _LoginWidgetState extends State<LoginWidget> {
               },
               autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
-            const SizedBox(height: 30.0),
+            const SizedBox(height: 32.0),
             Center(
               child: ElevatedButton(
                 child: !_isLoading
                   ? const Text("Login")
                   : const CircularProgressIndicator(),
                 style: _loginButtonStyle,
-                onPressed: _loginButtonEnabled && !_isLoading
-                  ? () { _handleSubmit(); } : null,
+                onPressed: _loginButtonEnabled ? () { _handleSubmit(); } : null,
               ),
             ),
           ],
