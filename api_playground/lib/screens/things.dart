@@ -1,17 +1,15 @@
 // ignore_for_file: avoid_print
 
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:api_playground/globals.dart';
-import 'package:api_playground/state.dart';
-import 'package:api_playground/widgets.dart';
 import 'package:http/http.dart' as http;
-// import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 
+import 'package:api_playground/globals.dart';
+import 'package:api_playground/state.dart';
+import 'package:api_playground/widgets.dart';
 import 'package:api_playground/helpers.dart';
 import 'package:api_playground/models.dart';
 

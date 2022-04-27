@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:api_playground/state.dart';
@@ -14,23 +13,23 @@ Future main() async {
   await sharedPrefs.init();
   await secureStorage.init();
 
+  // router
   runApp(const MyApp());
 }
 
-class AppRouter {
-  late final GoRouter router = GoRouter(
-    routes: <GoRoute>[
-      GoRoute(
-        path: '/',
-        builder: (BuildContext context, GoRouterState state) =>
-        const InitScreen(),
-      ),
-      GoRoute(
-        path: '/login',
-        pageBuilder: (context, state) => CustomTransitionPage<void>(
-          key: state.pageKey,
-          child: const LoginScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+final GoRouter _router = GoRouter(
+  routes: <GoRoute>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) =>
+      const InitScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      pageBuilder: (context, state) => CustomTransitionPage<void>(
+        key: state.pageKey,
+        child: const LoginScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             SlideTransition(
               position: animation.drive(
                 Tween<Offset>(
@@ -40,14 +39,14 @@ class AppRouter {
               ),
               child: child,
             ),
-        ),
       ),
-      GoRoute(
-        path: '/things',
-        pageBuilder: (context, state) => CustomTransitionPage<void>(
-          key: state.pageKey,
-          child: const ThingsListScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+    ),
+    GoRoute(
+      path: '/things',
+      pageBuilder: (context, state) => CustomTransitionPage<void>(
+        key: state.pageKey,
+        child: const ThingsListScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             SlideTransition(
               position: animation.drive(
                 Tween<Offset>(
@@ -57,11 +56,10 @@ class AppRouter {
               ),
               child: child,
             ),
-        ),
       ),
-    ],
-  );
-}
+    ),
+  ],
+);
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -69,31 +67,14 @@ class MyApp extends StatelessWidget {
   // widget
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        // ChangeNotifierProvider<AppState>(
-        //   create: (_) => AppState(),
-        //   lazy: false,
-        // ),
-        Provider<AppRouter>(
-          lazy: false,
-          create: (_) => AppRouter(),
-        ),
-      ],
-      child: Builder(
-        builder: (BuildContext context) {
-          final router = Provider.of<AppRouter>(context, listen: false).router;
-          return MaterialApp.router(
-            routeInformationParser: router.routeInformationParser,
-            routerDelegate: router.routerDelegate,
-            title: 'API Playground',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            debugShowCheckedModeBanner: false,
-          );
-        }
+    return MaterialApp.router(
+      routeInformationParser: _router.routeInformationParser,
+      routerDelegate: _router.routerDelegate,
+      title: 'API Playground',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
