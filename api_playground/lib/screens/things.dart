@@ -85,12 +85,13 @@ class ThingsListWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const SizedBox(
-                height: 32.0, width: 32.0,
-                child: CircularProgressIndicator()
-              ),
+                  height: 32.0,
+                  width: 32.0,
+                  child: CircularProgressIndicator()),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text("Loading...",
+                child: Text(
+                  "Loading...",
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -100,25 +101,27 @@ class ThingsListWidget extends StatelessWidget {
           return const Text("You have not created any Things.");
         }
 
-        return Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: Text("Your Things",
-                style: Theme.of(context).textTheme.titleLarge,
+        return RefreshIndicator(
+          onRefresh: () async {
+            await store.fetchThings();
+          },
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  "Your Things",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
-            ),
-            Expanded(
-              child: Center(
+              Expanded(
                 child: ListView.builder(
-                  shrinkWrap: true,
                   itemCount: store.things.length,
                   itemBuilder: (BuildContext context, int i) {
                     return ListTile(
                       onTap: () {
                         widgetHelpers.snackBarShow(
-                          context, "'${store.things[i].name}' tapped"
-                        );
+                          context, "Thing '${store.things[i].name}' tapped");
                       },
                       title: Text(
                         "- ${store.things[i].name}",
@@ -129,8 +132,8 @@ class ThingsListWidget extends StatelessWidget {
                   },
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
