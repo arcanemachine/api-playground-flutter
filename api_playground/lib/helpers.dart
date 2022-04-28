@@ -36,6 +36,7 @@ class WidgetHelpers {
 
     return _messenger.showSnackBar(
       SnackBar(
+        elevation: 10000.0,
         content: Text(message),
         action: SnackBarAction(
           label: 'OK',

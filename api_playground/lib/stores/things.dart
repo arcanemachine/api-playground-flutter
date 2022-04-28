@@ -1,6 +1,5 @@
 import 'dart:convert';
-// ignore: unused_import
-import 'dart:developer';
+import 'dart:developer'; // ignore: unused_import
 
 import 'package:http/http.dart' as http;
 import 'package:mobx/mobx.dart';
@@ -19,9 +18,6 @@ abstract class _ThingsStore with Store {
   _ThingsStore() {
     thingsFetch();
   }
-
-  static ObservableFuture<List<Thing>> emptyResponse =
-    ObservableFuture.value([]);
 
   @observable
   ObservableList<Thing> things = ObservableList<Thing>.of([]);
@@ -80,4 +76,33 @@ abstract class _ThingsStore with Store {
       }
     }
   }
+
+  @action
+  Future<void> thingUpdate(int thingId, String name) async {
+    // print("thingCreate(); name: $name");
+    final url = Uri.parse(Globals().urls.thingList);
+
+    final Map<String, String> headers = {
+      'Authorization': "Token ${await secureStorage.read('user_api_token')}",
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    final Object body = {'id': thingId, 'name': name};
+
+    final response =
+      await http.put(url, headers: headers, body: jsonEncode(body));
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      final Thing newThing = Thing.fromJson(decodedJson);
+      things.insert(0, newThing);
+    } else {
+      // throw the first exception message we can find
+      for (var key in decodedJson.keys) {
+         Exception(decodedJson[key][0]);
+      }
+    }
+  }
+
 }
