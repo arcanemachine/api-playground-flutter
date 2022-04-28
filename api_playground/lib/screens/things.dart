@@ -1,4 +1,5 @@
-import 'package:api_playground/models.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -42,8 +43,17 @@ class _ThingCreateWidgetState extends State<ThingCreateWidget> {
 
   void _handleSubmit() async {
     String _thingName = _controller.text;
-    await ThingsService().thingCreate(_thingName);
-    store.fetchThings();
+
+    // create thing
+    try {
+      await store.thingCreate(_thingName).then((x) {
+        widgetHelpers.snackBarShow(context, "Thing created: $_thingName");
+      });
+    } catch (e) {
+      widgetHelpers.snackBarShow(context, e);
+    }
+
+    // close the AlertDialog
     Navigator.pop(context);
   }
 
@@ -97,13 +107,11 @@ class ThingsListWidget extends StatelessWidget {
               ),
             ],
           );
-        } else if (store.things.isEmpty) {
-          return const Text("You have not created any Things.");
         }
 
         return RefreshIndicator(
           onRefresh: () async {
-            await store.fetchThings();
+            await store.thingsFetch();
           },
           child: Column(
             children: <Widget>[
@@ -116,19 +124,25 @@ class ThingsListWidget extends StatelessWidget {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: store.things.length,
+                  itemCount: store.things.isNotEmpty ? store.things.length : 1,
                   itemBuilder: (BuildContext context, int i) {
-                    return ListTile(
-                      onTap: () {
-                        widgetHelpers.snackBarShow(
-                          context, "Thing '${store.things[i].name}' tapped");
-                      },
-                      title: Text(
-                        "- ${store.things[i].name}",
+                    // debugger();
+                    return store.things.isEmpty
+                      ? const Text(
+                        "You have not created any Things.",
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                    );
+                      )
+                      : ListTile(
+                        onTap: () {
+                          widgetHelpers.snackBarShow(
+                            context, "Thing '${store.things[i].name}' tapped");
+                        },
+                        title: Text(
+                          "- ${store.things[i].name}",
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                      );
                   },
                 ),
               ),

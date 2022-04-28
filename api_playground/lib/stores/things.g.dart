@@ -41,26 +41,33 @@ mixin _$ThingsStore on _ThingsStore, Store {
     });
   }
 
-  final _$fetchThingsFutureAtom = Atom(name: '_ThingsStore.fetchThingsFuture');
+  final _$isLoadingAtom = Atom(name: '_ThingsStore.isLoading');
 
   @override
-  ObservableFuture<List<Thing>> get fetchThingsFuture {
-    _$fetchThingsFutureAtom.reportRead();
-    return super.fetchThingsFuture;
+  bool get isLoading {
+    _$isLoadingAtom.reportRead();
+    return super.isLoading;
   }
 
   @override
-  set fetchThingsFuture(ObservableFuture<List<Thing>> value) {
-    _$fetchThingsFutureAtom.reportWrite(value, super.fetchThingsFuture, () {
-      super.fetchThingsFuture = value;
+  set isLoading(bool value) {
+    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
+      super.isLoading = value;
     });
   }
 
-  final _$fetchThingsAsyncAction = AsyncAction('_ThingsStore.fetchThings');
+  final _$thingsFetchAsyncAction = AsyncAction('_ThingsStore.thingsFetch');
 
   @override
-  Future<void> fetchThings() {
-    return _$fetchThingsAsyncAction.run(() => super.fetchThings());
+  Future<void> thingsFetch() {
+    return _$thingsFetchAsyncAction.run(() => super.thingsFetch());
+  }
+
+  final _$thingCreateAsyncAction = AsyncAction('_ThingsStore.thingCreate');
+
+  @override
+  Future<void> thingCreate(String name) {
+    return _$thingCreateAsyncAction.run(() => super.thingCreate(name));
   }
 
   @override
@@ -68,7 +75,7 @@ mixin _$ThingsStore on _ThingsStore, Store {
     return '''
 things: ${things},
 initialFetchCompleted: ${initialFetchCompleted},
-fetchThingsFuture: ${fetchThingsFuture}
+isLoading: ${isLoading}
     ''';
   }
 }
