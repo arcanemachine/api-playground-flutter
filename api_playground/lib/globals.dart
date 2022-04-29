@@ -20,4 +20,5 @@ class _Urls {
   // things
   static const String _thingsBaseUrl = "$_baseUrl/things";
   String get thingList { return "$_thingsBaseUrl/"; }
+  String thingDetail(int thingId) { return "$_thingsBaseUrl/$thingId/"; }
 }

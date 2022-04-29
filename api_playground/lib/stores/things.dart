@@ -50,6 +50,11 @@ abstract class _ThingsStore with Store {
   }
 
   @action
+  void refreshThingList() {
+    things = ObservableList<Thing>.of(things);
+  }
+
+  @action
   Future<void> thingCreate(String name) async {
     // print("thingCreate(); name: $name");
     final url = Uri.parse(Globals().urls.thingList);
@@ -80,7 +85,7 @@ abstract class _ThingsStore with Store {
   @action
   Future<void> thingUpdate(int thingId, String name) async {
     // print("thingCreate(); name: $name");
-    final url = Uri.parse(Globals().urls.thingList);
+    final url = Uri.parse(Globals().urls.thingDetail(thingId));
 
     final Map<String, String> headers = {
       'Authorization': "Token ${await secureStorage.read('user_api_token')}",
@@ -95,8 +100,8 @@ abstract class _ThingsStore with Store {
     final Map<String, dynamic> decodedJson = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      final Thing newThing = Thing.fromJson(decodedJson);
-      things.insert(0, newThing);
+      final Thing updatedThing = things.firstWhere((t) => t.id == thingId);
+      updatedThing.name = name;
     } else {
       // throw the first exception message we can find
       for (var key in decodedJson.keys) {

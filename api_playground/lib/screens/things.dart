@@ -1,6 +1,7 @@
 // ignore: unused_import
 import 'dart:developer';
 
+import 'package:api_playground/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -68,22 +69,22 @@ class ThingsListWidget extends StatelessWidget {
             itemCount: store.things.isNotEmpty ? store.things.length : 1,
             itemBuilder: (BuildContext context, int i) {
               return store.things.isEmpty
-                  ? const Text(
-                      "You have not created any Things.",
-                      textAlign: TextAlign.center,
-                    )
-                  : ListTile(
-                      onLongPress: () => showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _thingMenu(context, store.things[i].id),
-                      ),
-                      title: Text(
-                        "- ${store.things[i].name}",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle1,
-                      ),
-                    );
+                ? const Text(
+                  "You have not created any Things.",
+                  textAlign: TextAlign.center,
+                )
+                : ListTile(
+                  onTap: () => showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) =>
+                      _thingMenu(context, store.things[i])
+                  ),
+                  title: Text(
+                    "- ${store.things[i].name}",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                );
             },
           ),
         ),
@@ -91,18 +92,27 @@ class ThingsListWidget extends StatelessWidget {
     );
   }
 
-  Widget _thingMenu(BuildContext context, int thingId) {
+  Widget _thingMenu(BuildContext context, Thing thing) {
     return AlertDialog(
       title: const Text("Manage this Thing", textAlign: TextAlign.center),
+      actions: [
+        TextButton(
+          child: const Text("Cancel"),
+          onPressed: () async => Navigator.pop(context),
+        ),
+      ],
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
             title: const Text("Edit this Thing"),
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) => ThingUpdateAlertDialog(thingId: thingId),
-            ),
+            onTap: () {
+              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (_) => ThingUpdateAlertDialog(thing: thing),
+              );
+            },
           ),
           ListTile(
             title: const Text("Delete this Thing"),
@@ -110,12 +120,6 @@ class ThingsListWidget extends StatelessWidget {
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          child: const Text("Cancel"),
-          onPressed: () async => Navigator.pop(context),
-        ),
-      ],
     );
   }
 
@@ -232,43 +236,94 @@ class _ThingCreateWidgetState extends State<ThingCreateWidget> {
 // update
 class ThingUpdateAlertDialog extends StatefulWidget {
   const ThingUpdateAlertDialog({
-    Key? key, required this.thingId
+    Key? key, required this.thing
   }) : super(key: key);
 
-  final int thingId;
+  final Thing thing;
 
   @override
   State<ThingUpdateAlertDialog> createState() => _ThingUpdateAlertDialogState();
 }
 
 class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
-  final _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
+
+  bool _isLoading = false;
+  String _errorText = "";
+
+  @override
+  initState() {
+    super.initState();
+
+    _controller.text = widget.thing.name;
+  }
 
   void _handleSubmit() async {
+    int _thingId = widget.thing.id;
     String _thingName = _controller.text;
+
+    setState(() { _isLoading = true; });
 
     // create thing
     try {
-      await store.thingUpdate(widget.thingId, _thingName).then((x) {
-        widgetHelpers.snackBarShow(context, "Thing created: $_thingName");
-      });
-    } catch (e) {
-      widgetHelpers.snackBarShow(context, e);
-    }
+      await store.thingUpdate(_thingId, _thingName).then((x) {
+        setState(() { _isLoading = false; });
 
-    // close the AlertDialog
-    Navigator.pop(context);
+        widgetHelpers
+          .snackBarShow(context, "Thing updated successfully");
+
+        // refresh local thing list
+        store.refreshThingList();
+
+        // close the AlertDialog
+        Navigator.pop(context);
+      });
+    } on Exception catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorText = e.toString();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Create New Thing"),
-      content: TextFormField(
-        controller: _controller,
-        onChanged: (val) => setState(() {}),
-        decoration: const InputDecoration(hintText: "Name of this Thing"),
-        onFieldSubmitted: (x) async => _handleSubmit(),
+      title: Row(
+        children: [
+          const Flexible(fit: FlexFit.tight, child: Text("Edit this Thing")),
+          SizedBox(
+            height: 16.0, width: 16.0,
+            child: _isLoading ?
+            const CircularProgressIndicator() : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextFormField(
+            controller: _controller,
+            enabled: !_isLoading,
+            decoration: const InputDecoration(
+              hintText: "New Thing name",
+              labelText: "Name",
+            ),
+            onChanged: (x) => setState(() {}),
+            onFieldSubmitted: (x) async => _handleSubmit(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child:_errorText != ""
+              ? Text(_errorText,
+                style: const TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold
+                ),
+              )
+              : const SizedBox(height: 16.0),
+          ),
+        ],
       ),
       actions: <Widget>[
         TextButton(
@@ -277,11 +332,15 @@ class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
         ),
         TextButton(
           child: const Text("OK"),
-          onPressed: () => _controller.text.isNotEmpty ? _handleSubmit() : null,
+          onPressed: _controller.text.isNotEmpty&& !_isLoading ?
+              () { _handleSubmit(); } : null,
         ),
       ],
     );
   }
 }
 
+
 // delete
+
+
