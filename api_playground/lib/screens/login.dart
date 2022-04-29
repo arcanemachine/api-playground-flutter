@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:api_playground/globals.dart';
@@ -10,45 +11,49 @@ import 'package:api_playground/helpers.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
+  Widget _uselessDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Center(
+              child: Text("Useless Drawer",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+                ),
+              ),
+            )
+          ),
+          ListTile(
+            title: const Text(
+              "This drawer is just here to make it easy to check the "
+              "smoothness of animations on older devices."
+            ),
+            onTap: () { Navigator.pop(context); },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Center(
-                child: Text("Useless Drawer",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24.0,
-                  ),
-                ),
-              )
-            ),
-            ListTile(
-              title: const Text(
-                "This drawer is just here to make it easy to check the "
-                "smoothness of animations on older devices."
-              ),
-              onTap: () { Navigator.pop(context); },
-            ),
-          ],
-        ),
-      ),
+      drawer: _uselessDrawer(context),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          shrinkWrap: true,
           children: const <Widget>[
-            LoginFormWidget()
+            LoginFormWidget(),
           ],
         ),
       ),
@@ -67,12 +72,11 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  void _isLoadingSet(bool val) {
-    setState(() { _isLoading = val; });
+  void _isLoadingSet(bool isLoading) {
+    setState(() { _isLoading = isLoading; });
   }
 
-  bool get _loginButtonEnabled =>
-    !_isLoading
+  bool get _loginButtonEnabled => !_isLoading
     && _usernameController.text.isNotEmpty
     && _passwordController.text.isNotEmpty;
 
@@ -89,47 +93,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
       minimumSize: const Size(300, 60),
     );
 
-    void _handleSubmit() async {
-      // if (kDebugMode) print("_handleSubmit()");
-      final String _username = _usernameController.text;
-      final String _password = _passwordController.text;
-
-      // set loading status
-      _isLoadingSet(true);
-
-      // attempt to login
-      final Uri _loginUrl = Uri.parse(Globals().urls.login);
-      final http.Response _response = await http.post(_loginUrl, body: {
-        "username": _username,
-        "password": _password,
-      });
-
-      // reset loading status
-      _isLoadingSet(false);
-
-      if (_response.statusCode == 200) {
-        final decodedResponse = jsonDecode(_response.body);
-
-        helpers.login(context, decodedResponse['key']);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Error ${_response.statusCode}: ${_response.reasonPhrase}"
-            ),
-            action: SnackBarAction(
-              label: 'OK',
-              onPressed: () {},
-            ),
-          ),
-        );
-      }
-    }
-
     return Form(
       key: _formKey,
       child: Container(
-        constraints: const BoxConstraints(minWidth: 300, maxWidth: 300),
+        constraints: const BoxConstraints(maxWidth: 300),
         child: Column(
           children: [
             const SizedBox(height: 16.0),
@@ -146,7 +113,6 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 }
                 return null;
               },
-              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             TextFormField(
               controller: _passwordController,
@@ -163,14 +129,12 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 }
                 return null;
               },
-              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             const SizedBox(height: 32.0),
             Center(
               child: ElevatedButton(
-                child: !_isLoading
-                  ? const Text("Login")
-                  : const CircularProgressIndicator(),
+                child: !_isLoading ?
+                  const Text("Login") : const CircularProgressIndicator(),
                 style: _loginButtonStyle,
                 onPressed: _loginButtonEnabled ? () { _handleSubmit(); } : null,
               ),
@@ -180,6 +144,61 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
       ),
     );
   }
+
+  Widget _registerButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: TextButton(
+        child: const Text("Register new account",
+          style: TextStyle(
+            decoration: TextDecoration.underline,
+          ),
+        ),
+        onPressed: () {
+          context.push('/register');
+        },
+      ),
+    );
+  }
+
+  // methods
+  void _handleSubmit() async {
+    // if (kDebugMode) print("_handleSubmit()");
+    final String _username = _usernameController.text;
+    final String _password = _passwordController.text;
+
+    // set loading status
+    _isLoadingSet(true);
+
+    // attempt to login
+    final Uri _loginUrl = Uri.parse(Globals().urls.login);
+    final http.Response _response = await http.post(_loginUrl, body: {
+      "username": _username,
+      "password": _password,
+    });
+
+    // reset loading status
+    _isLoadingSet(false);
+
+    if (_response.statusCode == 200) {
+      final decodedResponse = jsonDecode(_response.body);
+
+      helpers.login(context, decodedResponse['key']);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              "Error ${_response.statusCode}: ${_response.reasonPhrase}"
+          ),
+          action: SnackBarAction(
+            label: 'OK',
+            onPressed: () {},
+          ),
+        ),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +213,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             child: Text('Please login to continue.'),
           ),
           _loginForm(),
+          _registerButton(),
         ],
       ),
     );

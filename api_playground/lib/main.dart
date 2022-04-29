@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:api_playground/state.dart';
 import 'package:api_playground/screens/login.dart';
+import 'package:api_playground/screens/register.dart';
 import 'package:api_playground/screens/things.dart';
 
 
@@ -19,7 +20,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) =>
-      const InitScreen(),
+        const InitScreen(),
     ),
     GoRoute(
       path: '/login',
@@ -37,6 +38,11 @@ final GoRouter _router = GoRouter(
               child: child,
             ),
       ),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (BuildContext context, GoRouterState state) =>
+        const RegisterScreen(),
     ),
     GoRoute(
       path: '/things',
