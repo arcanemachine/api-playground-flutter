@@ -3,25 +3,24 @@ import 'package:go_router/go_router.dart';
 
 import 'package:api_playground/state.dart';
 
-class Helpers extends ChangeNotifier {
+class Helpers {
   init() async {}
 
-  void login(BuildContext context) {
-    sharedPrefs.isLoggedIn = true;
-    context.go('/things');
-    widgetHelpers.snackBarShow(context, "Login successful");
-
-    notifyListeners();
+  void login(BuildContext context, String userApiToken) {
+    secureStorage.write('user_api_token', userApiToken).then((x) {
+      sharedPrefs.isLoggedIn = true;
+      context.go('/things');
+      widgetHelpers.snackBarShow(context, "Login successful");
+    });
   }
 
   void logout(BuildContext context) {
-    sharedPrefs.isLoggedIn = false;
-    context.go('/login');
-    widgetHelpers.snackBarShow(context, "Logout successful");
-
-    notifyListeners();
+    secureStorage.delete('user_api_token').then((x) {
+      sharedPrefs.isLoggedIn = false;
+      context.go('/login');
+      widgetHelpers.snackBarShow(context, "Logout successful");
+    });
   }
-
 }
 final helpers = Helpers();
 

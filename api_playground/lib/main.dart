@@ -9,11 +9,8 @@ import 'package:api_playground/screens/things.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // state
-  await sharedPrefs.init();
   await secureStorage.init();
 
-  // router
   runApp(const MyApp());
 }
 

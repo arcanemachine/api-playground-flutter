@@ -33,8 +33,32 @@ class ThingsScreen extends StatelessWidget {
   }
 }
 
-class ThingsListWidget extends StatelessWidget {
+class ThingsListWidget extends StatefulWidget {
   const ThingsListWidget({Key? key}) : super(key: key);
+
+  @override
+  State<ThingsListWidget> createState() => _ThingsListWidgetState();
+}
+
+class _ThingsListWidgetState extends State<ThingsListWidget> {
+  bool thingsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // update thing list when widget created
+    store.thingsFetch().then((x) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    store.localThingsReset();
+
+    super.dispose();
+  }
 
   Widget _initialLoadingWidget(BuildContext context) {
     return Column(
@@ -258,7 +282,7 @@ class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
   String _errorText = "";
 
   @override
-  initState() {
+  void initState() {
     super.initState();
 
     _controller.text = widget.thing.name;
@@ -278,7 +302,7 @@ class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
         widgetHelpers.snackBarShow(context, "Thing updated successfully");
 
         // refresh local thing list
-        store.refreshThingList();
+        store.localThingsRefresh();
 
         // close the AlertDialog
         Navigator.pop(context);
@@ -363,10 +387,16 @@ class _ThingDeleteAlertDialogState extends State<ThingDeleteAlertDialog> {
   bool _isLoading = false;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
 
     _controller.text = widget.thing.name;
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   void _handleSubmit() async {
@@ -380,7 +410,7 @@ class _ThingDeleteAlertDialogState extends State<ThingDeleteAlertDialog> {
         widgetHelpers.snackBarShow(context, "Thing deleted successfully");
 
         // refresh local thing list
-        store.refreshThingList();
+        store.localThingsRefresh();
 
         // close the AlertDialog
         Navigator.pop(context);
@@ -402,7 +432,7 @@ class _ThingDeleteAlertDialogState extends State<ThingDeleteAlertDialog> {
           SizedBox(
             height: 16.0, width: 16.0,
             child: _isLoading ?
-            const CircularProgressIndicator() : const SizedBox.shrink(),
+              const CircularProgressIndicator() : const SizedBox.shrink(),
           ),
         ],
       ),

@@ -83,13 +83,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
       if (_response.statusCode == 200) {
         final decodedResponse = jsonDecode(_response.body);
 
-        // update state
-        await secureStorage  // save token to secure storage
-            .write('user_api_token', decodedResponse['key']);
-        sharedPrefs.isLoggedIn = true; // set login status
-
-        // login
-        helpers.login(context);
+        helpers.login(context, decodedResponse['key']);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

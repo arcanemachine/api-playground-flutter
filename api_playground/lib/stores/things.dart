@@ -50,8 +50,14 @@ abstract class _ThingsStore with Store {
   }
 
   @action
-  void refreshThingList() {
+  void localThingsRefresh() {
     things = ObservableList<Thing>.of(things);
+  }
+
+  @action
+  void localThingsReset() {
+    initialFetchCompleted = false;
+    things = ObservableList<Thing>.of([]);
   }
 
   @action
@@ -76,7 +82,7 @@ abstract class _ThingsStore with Store {
     } else {
       // throw the first exception message we can find
       for (var key in decodedJson.keys) {
-        throw Exception(decodedJson[key][0]);
+        throw Exception(decodedJson[key]);
       }
     }
   }
@@ -103,7 +109,7 @@ abstract class _ThingsStore with Store {
     } else {
       // throw the first exception message we can find
       for (var key in decodedJson.keys) {
-        throw Exception(decodedJson[key][0]);
+        throw Exception(decodedJson[key]);
       }
     }
   }

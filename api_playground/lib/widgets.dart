@@ -33,6 +33,7 @@ class AuthWidgets {
                             child: const Text("Yes"),
                             onPressed: () {
                               helpers.logout(context);
+                              Navigator.pop(context);
                             },
                           ),
                         ],
