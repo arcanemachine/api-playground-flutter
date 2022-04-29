@@ -81,10 +81,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
     && _passwordController.text.isNotEmpty;
 
   // controllers
-  final _usernameController =
-    TextEditingController.fromValue(const TextEditingValue(text: "user"));
-  final _passwordController =
-    TextEditingController.fromValue(const TextEditingValue(text: "password"));
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   // widgets
   Widget _loginForm() {

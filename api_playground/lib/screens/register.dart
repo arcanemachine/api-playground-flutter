@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -46,14 +45,10 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
       && _password1Controller.text == _password2Controller.text;
 
   // controllers
-  final _usernameController =
-    TextEditingController.fromValue(const TextEditingValue(text: "user"));
-  final _emailController =
-    TextEditingController.fromValue(const TextEditingValue(text: "user@example.com"));
-  final _password1Controller =
-    TextEditingController.fromValue(const TextEditingValue(text: "pass123123"));
-  final _password2Controller =
-    TextEditingController.fromValue(const TextEditingValue(text: "pass123123"));
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _password1Controller = TextEditingController();
+  final _password2Controller = TextEditingController();
 
   // methods
   void _handleSubmit() async {
