@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import 'package:api_playground/globals.dart';
 import 'package:api_playground/helpers.dart';
-import 'package:api_playground/state.dart';
 
 
 class LoginScreen extends StatelessWidget {
@@ -16,6 +15,34 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Center(
+                child: Text("Useless Drawer",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24.0,
+                  ),
+                ),
+              )
+            ),
+            ListTile(
+              title: const Text(
+                "This drawer is just here to make it easy to check the "
+                "smoothness of animations on older devices."
+              ),
+              onTap: () { Navigator.pop(context); },
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
