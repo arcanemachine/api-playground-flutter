@@ -1,5 +1,12 @@
-import 'package:api_playground/helpers.dart';
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:api_playground/helpers.dart';
+import 'package:api_playground/globals.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -33,10 +40,6 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  void _isLoadingSet(bool isLoading) {
-    setState(() { _isLoading = isLoading; });
-  }
-
   bool get _loginButtonEnabled => !_isLoading
       && _usernameController.text.isNotEmpty
       && _password1Controller.text.isNotEmpty
@@ -54,9 +57,57 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
 
   // methods
   void _handleSubmit() async {
-    return;
+    String _username = _usernameController.text;
+    String _email = _emailController.text;
+    String _password1 = _password1Controller.text;
+    String _password2 = _password2Controller.text;
+
+    setState(() { _isLoading = true; });
+
+    try {
+      await _userRegister(_username, _email, _password1, _password2)
+          .then((x) {
+        context.go('/');
+        helperWidgets.snackBarShow(context, "Registration successful");
+      });
+    } on Exception catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      helperWidgets.snackBarShow(context, e.toString().substring(11));
+    }
   }
 
+  Future<void> _userRegister(
+      String username, String email, String password1, String password2
+  ) async {
+    final url = Uri.parse(globals.urls.userRegister);
+
+    final Map<String, String> headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    final Object body = {
+      'username': username,
+      'email': email,
+      'password1': password1,
+      'password2': password2,
+    };
+
+    final response =
+      await http.post(url, headers: headers, body: jsonEncode(body));
+    final Map<String, dynamic> decodedJson = jsonDecode(response.body);
+
+    if (response.statusCode != 201) {
+      // throw the first exception message we can find
+      for (var key in decodedJson.keys) {
+        throw Exception(decodedJson[key][0]);
+      }
+    }
+  }
+
+  // widgets
   Widget _registerForm(BuildContext context) {
     final ButtonStyle _registerButtonStyle = ElevatedButton.styleFrom(
       textStyle: const TextStyle(fontSize: 20.0),

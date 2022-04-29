@@ -16,6 +16,7 @@ class _Urls {
   // auth
   static const String _authBaseUrl = "$_baseUrl/auth";
   String get login { return "$_authBaseUrl/login/"; }
+  String get userRegister { return "$_authBaseUrl/registration/"; }
 
   // things
   static const String _thingsBaseUrl = "$_baseUrl/things";

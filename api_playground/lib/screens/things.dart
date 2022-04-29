@@ -196,7 +196,7 @@ class _ThingCreateWidgetState extends State<ThingCreateWidget> {
       await store.thingCreate(_thingName).then((x) {
         setState(() { _isLoading = false; });
 
-        widgetHelpers.snackBarShow(context, "Thing created: $_thingName");
+        helperWidgets.snackBarShow(context, "Thing created: $_thingName");
 
         // close the AlertDialog
         Navigator.pop(context);
@@ -299,7 +299,7 @@ class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
       await store.thingUpdate(_thingId, _thingName).then((x) {
         // setState(() { _isLoading = false; });
 
-        widgetHelpers.snackBarShow(context, "Thing updated successfully");
+        helperWidgets.snackBarShow(context, "Thing updated successfully");
 
         // refresh local thing list
         store.localThingsRefresh();
@@ -407,7 +407,7 @@ class _ThingDeleteAlertDialogState extends State<ThingDeleteAlertDialog> {
     // delete thing
     try {
       await store.thingDelete(_thingId).then((x) {
-        widgetHelpers.snackBarShow(context, "Thing deleted successfully");
+        helperWidgets.snackBarShow(context, "Thing deleted successfully");
 
         // refresh local thing list
         store.localThingsRefresh();
@@ -416,7 +416,7 @@ class _ThingDeleteAlertDialogState extends State<ThingDeleteAlertDialog> {
         Navigator.pop(context);
       });
     } on Exception catch (e) {
-      widgetHelpers.snackBarShow(context, e.toString());
+      helperWidgets.snackBarShow(context, e.toString());
       setState(() {
         _isLoading = false;
       });

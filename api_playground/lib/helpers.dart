@@ -10,15 +10,15 @@ class Helpers {
     secureStorage.write('user_api_token', userApiToken).then((x) {
       sharedPrefs.isLoggedIn = true;
       context.go('/things');
-      widgetHelpers.snackBarShow(context, "Login successful");
+      helperWidgets.snackBarShow(context, "Login successful");
     });
   }
 
   void logout(BuildContext context) {
     secureStorage.delete('user_api_token').then((x) {
       sharedPrefs.isLoggedIn = false;
-      context.go('/login');
-      widgetHelpers.snackBarShow(context, "Logout successful");
+      context.go('/');
+      helperWidgets.snackBarShow(context, "Logout successful");
     });
   }
 
@@ -37,7 +37,7 @@ class Helpers {
 }
 final helpers = Helpers();
 
-class WidgetHelpers {
+class HelperWidgets {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarShow(
     context, message
   ) {
@@ -65,4 +65,4 @@ class WidgetHelpers {
     );
   }
 }
-final widgetHelpers = WidgetHelpers();
+final helperWidgets = HelperWidgets();
