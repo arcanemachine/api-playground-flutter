@@ -10,6 +10,7 @@ import 'package:api_playground/screens/things.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await sharedPrefs.init();
   await secureStorage.init();
 
   runApp(const MyApp());
@@ -87,10 +88,6 @@ class InitScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (sharedPrefs.isLoggedIn) {
-      return const ThingsScreen();
-    } else {
-      return const LoginScreen();
-    }
+    return sharedPrefs.isLoggedIn ? const ThingsScreen() : const LoginScreen();
   }
 }

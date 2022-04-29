@@ -14,6 +14,9 @@ class SharedPrefs {
   set isLoggedIn(bool val) {
     _sharedPrefs?.setBool('is_logged_in', val);
   }
+  Future<bool> getLoginStatus() {
+    return Future.value(isLoggedIn);
+  }
 
 }
 final sharedPrefs = SharedPrefs();
