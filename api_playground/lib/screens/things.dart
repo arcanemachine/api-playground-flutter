@@ -116,7 +116,13 @@ class ThingsListWidget extends StatelessWidget {
           ),
           ListTile(
             title: const Text("Delete this Thing"),
-            onTap: () {},
+            onTap: () {
+              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (_) => ThingDeleteAlertDialog(thing: thing),
+              );
+            },
           ),
         ],
       ),
@@ -264,13 +270,12 @@ class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
 
     setState(() { _isLoading = true; });
 
-    // create thing
+    // update thing
     try {
       await store.thingUpdate(_thingId, _thingName).then((x) {
-        setState(() { _isLoading = false; });
+        // setState(() { _isLoading = false; });
 
-        widgetHelpers
-          .snackBarShow(context, "Thing updated successfully");
+        widgetHelpers.snackBarShow(context, "Thing updated successfully");
 
         // refresh local thing list
         store.refreshThingList();
@@ -340,7 +345,81 @@ class _ThingUpdateAlertDialogState extends State<ThingUpdateAlertDialog> {
   }
 }
 
-
 // delete
+class ThingDeleteAlertDialog extends StatefulWidget {
+  const ThingDeleteAlertDialog({
+    Key? key, required this.thing
+  }) : super(key: key);
 
+  final Thing thing;
 
+  @override
+  State<ThingDeleteAlertDialog> createState() => _ThingDeleteAlertDialogState();
+}
+
+class _ThingDeleteAlertDialogState extends State<ThingDeleteAlertDialog> {
+  final TextEditingController _controller = TextEditingController();
+
+  bool _isLoading = false;
+
+  @override
+  initState() {
+    super.initState();
+
+    _controller.text = widget.thing.name;
+  }
+
+  void _handleSubmit() async {
+    int _thingId = widget.thing.id;
+
+    setState(() { _isLoading = true; });
+
+    // delete thing
+    try {
+      await store.thingDelete(_thingId).then((x) {
+        widgetHelpers.snackBarShow(context, "Thing deleted successfully");
+
+        // refresh local thing list
+        store.refreshThingList();
+
+        // close the AlertDialog
+        Navigator.pop(context);
+      });
+    } on Exception catch (e) {
+      widgetHelpers.snackBarShow(context, e.toString());
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Row(
+        children: [
+          const Flexible(fit: FlexFit.tight, child: Text("Delete this Thing")),
+          SizedBox(
+            height: 16.0, width: 16.0,
+            child: _isLoading ?
+            const CircularProgressIndicator() : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+      content: Text(
+        "You are about to delete the following item: '${widget.thing.name}'"
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text("Cancel"),
+          onPressed: () => Navigator.pop(context),
+        ),
+        TextButton(
+          child: const Text("OK"),
+          onPressed: _controller.text.isNotEmpty && !_isLoading ?
+            () { _handleSubmit(); } : null,
+        ),
+      ],
+    );
+  }
+}

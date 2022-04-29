@@ -56,8 +56,7 @@ abstract class _ThingsStore with Store {
 
   @action
   Future<void> thingCreate(String name) async {
-    // print("thingCreate(); name: $name");
-    final url = Uri.parse(Globals().urls.thingList);
+    final url = Uri.parse(globals.urls.thingList);
 
     final Map<String, String> headers = {
       'Authorization': "Token ${await secureStorage.read('user_api_token')}",
@@ -84,8 +83,7 @@ abstract class _ThingsStore with Store {
 
   @action
   Future<void> thingUpdate(int thingId, String name) async {
-    // print("thingCreate(); name: $name");
-    final url = Uri.parse(Globals().urls.thingDetail(thingId));
+    final url = Uri.parse(globals.urls.thingDetail(thingId));
 
     final Map<String, String> headers = {
       'Authorization': "Token ${await secureStorage.read('user_api_token')}",
@@ -96,7 +94,7 @@ abstract class _ThingsStore with Store {
     final Object body = {'id': thingId, 'name': name};
 
     final response =
-      await http.put(url, headers: headers, body: jsonEncode(body));
+    await http.put(url, headers: headers, body: jsonEncode(body));
     final Map<String, dynamic> decodedJson = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
@@ -105,9 +103,28 @@ abstract class _ThingsStore with Store {
     } else {
       // throw the first exception message we can find
       for (var key in decodedJson.keys) {
-         Exception(decodedJson[key][0]);
+        throw Exception(decodedJson[key][0]);
       }
     }
   }
 
+  @action
+  Future<void> thingDelete(int thingId) async {
+    final url = Uri.parse(globals.urls.thingDetail(thingId));
+
+    final Map<String, String> headers = {
+      'Authorization': "Token ${await secureStorage.read('user_api_token')}",
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    final response = await http.delete(url, headers: headers);
+
+    if (response.statusCode == 204) {
+      final Thing thingToDelete = things.firstWhere((t) => t.id == thingId);
+      things.remove(thingToDelete);
+    } else {
+      throw Exception(response.reasonPhrase);
+    }
+  }
 }
