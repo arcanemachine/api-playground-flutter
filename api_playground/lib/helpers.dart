@@ -15,10 +15,11 @@ class Helpers {
   }
 
   void logout(BuildContext context) {
-    secureStorage.delete('user_api_token');
-    sharedPrefs.isLoggedIn = false;
-    context.go('/');
-    helperWidgets.snackBarShow(context, "Logout successful");
+    secureStorage.delete('user_api_token').then((x) {
+      sharedPrefs.isLoggedIn = false;
+      context.go('/login');
+      helperWidgets.snackBarShow(context, "Logout successful");
+    });
   }
 
   String? validateEmail(String? value) {
